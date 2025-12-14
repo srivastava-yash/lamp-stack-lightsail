@@ -311,13 +311,19 @@ done
         # Build directory search logic based on config
         dir_checks = ""
         if expected_dirs:
-            for dir_name in expected_dirs:
-                dir_checks += f'''
+            for i, dir_name in enumerate(expected_dirs):
+                if i == 0:
+                    dir_checks += f'''
 if [ -d "./{dir_name}" ]; then
     EXTRACTED_DIR="./{dir_name}"
-    echo "✅ Found configured directory: {dir_name}"
-elif'''
-            dir_checks += ''' [ -z "$EXTRACTED_DIR" ]; then
+    echo "✅ Found configured directory: {dir_name}"'''
+                else:
+                    dir_checks += f'''
+elif [ -d "./{dir_name}" ]; then
+    EXTRACTED_DIR="./{dir_name}"
+    echo "✅ Found configured directory: {dir_name}"'''
+            dir_checks += '''
+else
     EXTRACTED_DIR=$(find . -maxdepth 1 -type d -name "example-*-app" | head -n 1)
 fi'''
         else:
